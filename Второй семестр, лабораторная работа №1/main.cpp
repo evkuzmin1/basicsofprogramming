@@ -23,33 +23,45 @@ void AddFirst(product*& primacy, int id1, int q) {
     primacy = newproduct;
 }
 
-void AddAfterFirst(product*& primacy, int id1, int q) {
+
+void AddBefore(product*& primacy, int target_id, int id1, int q) {
     if (primacy == NULL) {
-        cout << "This list is empty" << endl;
-        AddFirst(primacy, id1, q);
+        cout << "List is empty" << endl;
         return;
     }
-    product* newproduct = new product{ id1, q, primacy->next };
-    primacy->next = newproduct;
-}
-
-void AddBeforeLast(product*& primacy, int id1, int q) {
-    if (primacy == NULL || primacy->next == NULL) {
-        cout << "List is too short" << endl;
+    if (primacy->id == target_id) {
         AddFirst(primacy, id1, q);
         return;
     }
     product* current = primacy;
-    while (current->next->next != NULL) {
+    while (current->next != NULL && current->next->id != target_id) {
         current = current->next;
+    }
+    if (current->next == NULL) {
+        cout << "Target id not found in list" << endl;
+        return;
     }
     product* newproduct = new product{ id1, q, current->next };
     current->next = newproduct;
 }
 
+void AddAfter(product*& primacy, int target_id, int id1, int q) {
+    product* current = primacy;
+    while (current != NULL && current->id != target_id) {
+        current = current->next;
+    }
+    if (current == NULL) {
+        cout << "Target id not found in list" << endl;
+        return;
+    }
+    product* newproduct = new product{ id1, q, current->next };
+    current->next = newproduct;
+}
+
+
 void PrintList(product* primacy) {
     if (primacy == NULL) {
-        cout << "This list is empty" << endl;
+        cout << "List is empty" << endl;
         return;
     }
     product* tmp = primacy;
@@ -75,9 +87,28 @@ void GetLast(product*& primacy, int id1, int q) {
     tmp->next = newproduct;
 }
 
+void Delete(product*& primacy, int target_id) {
+    product** current = &primacy;
+
+    while (*current != nullptr && (*current)->id != target_id) {
+        current = &(*current)->next;
+    }
+
+    if (*current != nullptr) {
+        product* toDelete = *current;
+        *current = (*current)->next;
+        delete toDelete;
+        cout << "Element with id => " << target_id << " has been deleted." << endl;
+    }
+    else {
+        cout << "Element with id => " << target_id << " not found." << endl;
+    }
+}
+
+
 void PrintElement(product* primacy, int position) {
     if (primacy == NULL) {
-        cout << "The list is empty." << endl;
+        cout << "List is empty." << endl;
         return;
     }
     int index = 1; 
@@ -119,12 +150,17 @@ int main() {
 
     cout << "*****\n";
 
-    AddAfterFirst(head, 4, 9);
+    AddAfter(head, 2, 4, 9);
     PrintList(head);
 
     cout << "*****\n";
 
-    AddBeforeLast(head, 5, 2);
+    AddBefore(head, 1, 5, 2);
+    PrintList(head);
+
+    cout << "<><><><><><><><><><><><><><><><><><><><><>\n";
+    
+    Delete(head, 3);
     PrintList(head);
 
     cout << "======= &&&&&&&&&&&&&&& =======\n";
